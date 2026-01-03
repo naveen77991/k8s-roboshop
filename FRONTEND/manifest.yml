@@ -1,0 +1,53 @@
+# -------------------------------
+# Frontend Deployment
+# -------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
+  namespace: roboshop
+  labels:
+    component: frontend
+    tier: frontend
+    project: roboshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: frontend
+      tier: frontend
+      project: roboshop
+  template:
+    metadata:
+      labels:
+        component: frontend
+        tier: frontend
+        project: roboshop
+    spec:
+      containers:
+      - name: frontend
+        image: joindevops/frontend:v1
+        ports:
+        - containerPort: 80
+---
+# -------------------------------
+# Frontend Service (LoadBalancer)
+# -------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: frontend
+  namespace: roboshop
+  labels:
+    component: frontend
+    tier: frontend
+    project: roboshop
+spec:
+  type: LoadBalancer
+  selector:
+    component: frontend
+    tier: frontend
+    project: roboshop
+  ports:
+  - port: 80
+    targetPort: 80
