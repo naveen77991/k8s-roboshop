@@ -1,0 +1,72 @@
+# -------------------------------
+# Secret (CONFIDENTIAL)
+# -------------------------------
+apiVersion: v1
+kind: Secret
+metadata:
+  name: mysql-secret
+  namespace: roboshop
+  labels:
+    component: mysql
+    tier: db
+    project: roboshop
+type: Opaque
+stringData:
+  MYSQL_ROOT_PASSWORD: "Um9ib1Nob3BAMQ=="
+---
+# -------------------------------
+# MySQL Deployment
+# -------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mysql
+  namespace: roboshop
+  labels:
+    component: mysql
+    tier: db
+    project: roboshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: mysql
+      tier: db
+      project: roboshop
+  template:
+    metadata:
+      labels:
+        component: mysql
+        tier: db
+        project: roboshop
+    spec:
+      containers:
+      - name: mysql
+        image: joindevops/mysql:v1
+        ports:
+        - containerPort: 3306
+        envFrom:
+        - secretRef:
+            name: mysql-secret
+---
+# -------------------------------
+# MySQL Service
+# -------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: mysql
+  namespace: roboshop
+  labels:
+    component: mysql
+    tier: db
+    project: roboshop
+spec:
+  type: ClusterIP
+  selector:
+    component: mysql
+    tier: db
+    project: roboshop
+  ports:
+  - port: 3306
+    targetPort: 3306
