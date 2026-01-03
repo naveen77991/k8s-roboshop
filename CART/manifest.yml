@@ -1,0 +1,73 @@
+# -------------------------------
+# ConfigMap
+# -------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: cart-config
+  namespace: roboshop
+  labels:
+    component: cart
+    tier: backend
+    project: roboshop
+data:
+  REDIS_HOST: redis
+  CATALOGUE_HOST: catalogue
+  CATALOGUE_PORT: "8080"
+---
+# -------------------------------
+# Cart Deployment
+# -------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cart
+  namespace: roboshop
+  labels:
+    component: cart
+    tier: backend
+    project: roboshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: cart
+      tier: backend
+      project: roboshop
+  template:
+    metadata:
+      labels:
+        component: cart
+        tier: backend
+        project: roboshop
+    spec:
+      containers:
+      - name: cart
+        image: joindevops/cart:v1
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: cart-config
+---
+# -------------------------------
+# Cart Service
+# -------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: cart
+  namespace: roboshop
+  labels:
+    component: cart
+    tier: backend
+    project: roboshop
+spec:
+  type: ClusterIP
+  selector:
+    component: cart
+    tier: backend
+    project: roboshop
+  ports:
+  - port: 8080
+    targetPort: 8080
