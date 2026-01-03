@@ -11,14 +11,14 @@ spec:
 ---
 apiVersion: v1 
 kind: Service 
-metadata:
-  name: servi 
+metadata: 
+  name: java
 spec: 
-  type: ClusterIP 
+  type: NodePort
   selector: 
-    color: red 
+   color: red 
   ports: 
-    - protocol: TCP 
-      port: 80
-      targetPort: 80 
-                    
+   - protocol: TCP 
+     port: 80 
+     targetPort:80
+
