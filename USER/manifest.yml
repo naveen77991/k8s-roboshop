@@ -1,0 +1,73 @@
+# -------------------------------
+# ConfigMap
+# -------------------------------
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: user-config
+  namespace: roboshop
+  labels:
+    component: user
+    tier: backend
+    project: roboshop
+data:
+  REDIS_URL: redis://redis:6379
+  MONGO_URL: mongodb://mongodb:27017/users
+  MONGO: "true"
+---
+# -------------------------------
+# User Deployment
+# -------------------------------
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: user
+  namespace: roboshop
+  labels:
+    component: user
+    tier: backend
+    project: roboshop
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: user
+      tier: backend
+      project: roboshop
+  template:
+    metadata:
+      labels:
+        component: user
+        tier: backend
+        project: roboshop
+    spec:
+      containers:
+      - name: user
+        image: joindevops/user:v1
+        ports:
+        - containerPort: 8080
+        envFrom:
+        - configMapRef:
+            name: user-config
+---
+# -------------------------------
+# User Service
+# -------------------------------
+apiVersion: v1
+kind: Service
+metadata:
+  name: user
+  namespace: roboshop
+  labels:
+    component: user
+    tier: backend
+    project: roboshop
+spec:
+  type: ClusterIP
+  selector:
+    component: user
+    tier: backend
+    project: roboshop
+  ports:
+  - port: 8080
+    targetPort: 8080
