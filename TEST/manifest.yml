@@ -12,13 +12,13 @@ spec:
 apiVersion: v1 
 kind: Service 
 metadata: 
-  name: java
+  name: java 
 spec: 
-  type: NodePort
   selector: 
     color: red 
   ports: 
     - protocol: TCP 
       port: 80
       targetPort: 80
+  type: LoadBalancer        
 
